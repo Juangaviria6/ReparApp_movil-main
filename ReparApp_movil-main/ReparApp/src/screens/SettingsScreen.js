@@ -3,11 +3,13 @@ import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Switch } from "
 import { Ionicons } from "@expo/vector-icons"
 import styles from "../styles/SettingsScreenStyles"
 
+// Pantalla de configuraciones que permite ajustar preferencias de la app
 export default function SettingsScreen() {
   const [notifications, setNotifications] = useState(true)
   const [darkMode, setDarkMode] = useState(false)
   const [locationServices, setLocationServices] = useState(true)
 
+  // Configuraciones disponibles en la pantalla
   const settingsOptions = [
     {
       id: 1,
@@ -73,6 +75,7 @@ export default function SettingsScreen() {
     },
   ]
 
+  // Función para renderizar cada opción de configuración
   const renderSettingItem = (item) => {
     return (
       <TouchableOpacity key={item.id} style={styles.settingItem}>
@@ -104,16 +107,13 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header con título */}
         <View style={styles.header}>
           <Text style={styles.title}>Configuración</Text>
         </View>
 
+        {/* Lista de opciones de configuración */}
         <View style={styles.section}>{settingsOptions.map(renderSettingItem)}</View>
-
-        <TouchableOpacity style={styles.logoutButton}>
-          <Ionicons name="log-out-outline" size={20} color="#ef4444" />
-          <Text style={styles.logoutText}>Cerrar Sesión</Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   )

@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from "react-na
 import { Ionicons } from "@expo/vector-icons";
 import styles from "../styles/HomeScreenStyles";
 
+// Lista de servicios disponibles con iconos y colores
 const services = [
   { id: 1, name: "Plomería", icon: "water", color: "#3b82f6" },
   { id: 2, name: "Electricidad", icon: "flash", color: "#f59e0b" },
@@ -12,16 +13,19 @@ const services = [
   { id: 6, name: "Reparaciones", icon: "construct", color: "#f97316" },
 ];
 
+// Lista de proveedores destacados con calificaciones
 const providers = [
   { id: 1, name: "TecnoFix Pro", rating: 4.8, services: "Electricidad, Plomería" },
   { id: 2, name: "Hogar Seguro", rating: 4.9, services: "Cerrajería, Seguridad" },
   { id: 3, name: "CleanMaster", rating: 4.7, services: "Limpieza General" },
 ];
 
+// Pantalla principal que muestra servicios disponibles y proveedores destacados
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header con saludo y botón de notificaciones */}
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>¡Hola!</Text>
@@ -32,11 +36,13 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Barra de búsqueda */}
         <View style={styles.searchContainer}>
           <Ionicons name="search-outline" size={20} color="#666" style={styles.searchIcon} />
           <Text style={styles.searchPlaceholder}>Buscar servicios...</Text>
         </View>
 
+        {/* Sección de servicios disponibles */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Servicios Disponibles</Text>
           <View style={styles.servicesGrid}>
@@ -51,6 +57,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
+        {/* Sección de proveedores destacados */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Proveedores Destacados</Text>
           {providers.map((provider) => (

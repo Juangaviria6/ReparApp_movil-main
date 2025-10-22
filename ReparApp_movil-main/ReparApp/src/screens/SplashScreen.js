@@ -2,28 +2,36 @@ import React, { useEffect, useRef } from "react"
 import { View, Text, Animated, Dimensions } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Ionicons } from "@expo/vector-icons"
+import { useNavigation } from "@react-navigation/native"
 import styles from "../styles/SplashScreenStyles"
 
 const { width, height } = Dimensions.get("window")
 
+// Pantalla de carga inicial con animaciones que navega al login
 export default function SplashScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current
   const scaleAnim = useRef(new Animated.Value(0.5)).current
+  const navigation = useNavigation()
 
+  // Ejecuta animaciones de fade in y escala, luego navega al login
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 1500,
-        useNativeDriver: true,
+        duration: 2000,
+        useNativeDriver: false,
       }),
       Animated.spring(scaleAnim, {
         toValue: 1,
         tension: 50,
         friction: 7,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
-    ]).start()
+    ]).start(() => {
+      setTimeout(() => {
+        navigation.navigate('Login')
+      }, 1000)
+    })
   }, [])
 
   return (

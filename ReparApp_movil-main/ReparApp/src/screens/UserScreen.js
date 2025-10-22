@@ -1,8 +1,12 @@
 import React from "react"
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from "react-native"
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { useAuth } from "../../navigation/AppNavigator"
+import { signOut } from "firebase/auth"
+import { auth } from "../services/firebaseConfig"
 import styles from "../styles/UserScreenStyles"
 
+// Datos mock de servicios recientes
 const recentServices = [
   {
     id: 1,
@@ -30,18 +34,32 @@ const recentServices = [
   },
 ]
 
+// Pantalla de perfil que muestra información del usuario y servicios recientes
 export default function UserScreen() {
+  const { user } = useAuth();
+
+  // Función para cerrar sesión del usuario
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      Alert.alert('Error', 'No se pudo cerrar sesión. Intenta de nuevo.');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header con información del perfil */}
         <View style={styles.header}>
           <View style={styles.profileSection}>
             <View style={styles.avatarContainer}>
               <Ionicons name="person" size={40} color="#059669" />
             </View>
             <View style={styles.userInfo}>
-              <Text style={styles.userName}>Juan Pérez</Text>
-              <Text style={styles.userEmail}>juan.perez@email.com</Text>
+              <Text style={styles.userName}>{user?.displayName || 'Usuario'}</Text>
+              <Text style={styles.userEmail}>{user?.email || 'usuario@email.com'}</Text>
               <View style={styles.ratingContainer}>
                 <Ionicons name="star" size={16} color="#f59e0b" />
                 <Text style={styles.userRating}>4.8</Text>
@@ -54,6 +72,7 @@ export default function UserScreen() {
           </View>
         </View>
 
+        {/* Estadísticas del usuario */}
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>24</Text>
@@ -71,6 +90,7 @@ export default function UserScreen() {
           </View>
         </View>
 
+        {/* Lista de servicios recientes */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Servicios Recientes</Text>
           {recentServices.map((service) => (
@@ -90,6 +110,7 @@ export default function UserScreen() {
           ))}
         </View>
 
+        {/* Acciones rápidas */}
         <View style={styles.quickActions}>
           <TouchableOpacity style={styles.actionButton}>
             <Ionicons name="repeat" size={20} color="#059669" />
@@ -98,6 +119,14 @@ export default function UserScreen() {
           <TouchableOpacity style={styles.actionButton}>
             <Ionicons name="star-outline" size={20} color="#059669" />
             <Text style={styles.actionText}>Mis Favoritos</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Botón de cerrar sesión */}
+        <View style={styles.logoutSection}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Ionicons name="log-out-outline" size={20} color="#ef4444" />
+            <Text style={styles.logoutText}>Cerrar Sesión</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

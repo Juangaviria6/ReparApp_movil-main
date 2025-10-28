@@ -2,6 +2,7 @@ const colors = {
   // Colores principales
   primary: '#059669',
   secondary: '#10B981',
+  principal: '#059669', // Alias para primary
   
   // Gradientes
   gradientePrimario: ['#059669', '#10B981', '#34D399'],

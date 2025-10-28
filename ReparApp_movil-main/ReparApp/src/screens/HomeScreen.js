@@ -1,7 +1,11 @@
-import React from "react";
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../../navigation/AppNavigator";
+import { useNavigation } from "@react-navigation/native";
+import sqliteService from "../services/sqliteService";
 import styles from "../styles/HomeScreenStyles";
+import colors from "../constants/colors";
 
 // Lista de servicios disponibles con iconos y colores
 const services = [
@@ -22,6 +26,68 @@ const providers = [
 
 // Pantalla principal que muestra servicios disponibles y proveedores destacados
 export default function HomeScreen() {
+  const { user } = useAuth();
+  const navigation = useNavigation();
+  const [favoriteStates, setFavoriteStates] = useState({});
+
+  useEffect(() => {
+    sqliteService.init();
+    loadFavoriteStates();
+  }, []);
+
+  // Manejar clic en servicio
+  const handleServicePress = (service) => {
+    const categoryMap = {
+      'Plomería': 'plomeria',
+      'Electricidad': 'electricidad',
+      'Carpintería': 'carpinteria',
+      'Cerrajería': 'cerrajeria',
+      'Limpieza': 'limpieza',
+      'Reparaciones': 'reparaciones',
+    };
+
+    navigation.navigate('ServiceProviders', {
+      serviceCategory: categoryMap[service.name] || service.name.toLowerCase(),
+      serviceName: service.name
+    });
+  };
+
+  const loadFavoriteStates = () => {
+    if (!user) return;
+    const states = {};
+    providers.forEach(provider => {
+      states[provider.id] = sqliteService.isFavorite(user.uid, provider.id.toString());
+    });
+    setFavoriteStates(states);
+  };
+
+  const toggleFavorite = (providerId, providerName) => {
+    if (!user) {
+      Alert.alert('Error', 'Debes estar autenticado para agregar favoritos');
+      return;
+    }
+
+    const isFavorite = favoriteStates[providerId];
+    
+    if (isFavorite) {
+      sqliteService.removeFavorite(user.uid, providerId.toString());
+      Alert.alert('Favorito removido', `${providerName} eliminado de favoritos`);
+    } else {
+      const provider = providers.find(p => p.id === providerId);
+      sqliteService.addFavorite(user.uid, providerId.toString(), {
+        name: provider.name,
+        rating: 4.7, // Puedes obtenerlo de los datos reales del proveedor
+        services: provider.services
+      });
+      Alert.alert('Favorito agregado', `${providerName} agregado a favoritos`);
+    }
+
+    setFavoriteStates(prev => ({
+      ...prev,
+      [providerId]: !isFavorite
+    }));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -40,6 +106,27 @@ export default function HomeScreen() {
         <View style={styles.searchContainer}>
           <Ionicons name="search-outline" size={20} color="#666" style={styles.searchIcon} />
           <Text style={styles.searchPlaceholder}>Buscar servicios...</Text>
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('AddProvider')}
+            style={{
+              backgroundColor: colors.principal,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 8,
+              flexDirection: 'row',
+              alignItems: 'center'
+            }}
+          >
+            <Ionicons name="add" size={18} color="#fff" />
+            <Text style={{
+              color: '#fff',
+              fontWeight: '600',
+              fontSize: 14,
+              marginLeft: 4
+            }}>
+              Agregar
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Sección de servicios disponibles */}
@@ -47,7 +134,11 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>Servicios Disponibles</Text>
           <View style={styles.servicesGrid}>
             {services.map((service) => (
-              <TouchableOpacity key={service.id} style={styles.serviceCard}>
+              <TouchableOpacity 
+                key={service.id} 
+                style={styles.serviceCard}
+                onPress={() => handleServicePress(service)}
+              >
                 <View style={[styles.serviceIcon, { backgroundColor: service.color }]}>
                   <Ionicons name={service.icon} size={24} color="white" />
                 </View>
@@ -61,7 +152,17 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Proveedores Destacados</Text>
           {providers.map((provider) => (
-            <TouchableOpacity key={provider.id} style={styles.providerCard}>
+            <View key={provider.id} style={styles.providerCard}>
+              <TouchableOpacity 
+                style={styles.favoriteButton}
+                onPress={() => toggleFavorite(provider.id, provider.name)}
+              >
+                <Ionicons 
+                  name={favoriteStates[provider.id] ? "heart" : "heart-outline"} 
+                  size={24} 
+                  color={favoriteStates[provider.id] ? "#ef4444" : "#64748b"} 
+                />
+              </TouchableOpacity>
               <View style={styles.providerInfo}>
                 <Text style={styles.providerName}>{provider.name}</Text>
                 <Text style={styles.providerServices}>{provider.services}</Text>
@@ -73,7 +174,7 @@ export default function HomeScreen() {
               <TouchableOpacity style={styles.contactButton}>
                 <Text style={styles.contactButtonText}>Contactar</Text>
               </TouchableOpacity>
-            </TouchableOpacity>
+            </View>
           ))}
         </View>
       </ScrollView>

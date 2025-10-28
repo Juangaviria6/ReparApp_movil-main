@@ -134,6 +134,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
   },
+  favoriteButton: {
+    padding: 8,
+    marginRight: 12,
+    alignSelf: 'flex-start',
+  },
 });
 
 export default styles;

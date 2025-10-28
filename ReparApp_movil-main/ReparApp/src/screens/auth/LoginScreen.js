@@ -27,9 +27,8 @@ const LoginScreen = () => {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             
-            Alert.alert('Éxito', 'Inicio de sesión exitoso', [
-                { text: 'OK', onPress: () => navigation.navigate('Main') }
-            ]);
+            Alert.alert('Éxito', 'Inicio de sesión exitoso');
+            // El auth state maneja la navegación automáticamente
 
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
@@ -98,6 +97,17 @@ const LoginScreen = () => {
 
                 <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Iniciar Sesión</Text>
+                </TouchableOpacity>
+
+                <View style={styles.dividerContainer}>
+                    <View style={styles.divider} />
+                    <Text style={styles.dividerText}>o</Text>
+                    <View style={styles.divider} />
+                </View>
+
+                <TouchableOpacity style={styles.googleButton} onPress={() => {}}>
+                    <Ionicons name="logo-google" size={24} color={colors.error} />
+                    <Text style={styles.googleButtonText}>Continuar con Google</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => navigation.navigate('Register')}>
@@ -169,6 +179,40 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginBottom: 10,
         textAlign: 'center',
+    },
+    dividerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        marginVertical: 20,
+    },
+    divider: {
+        flex: 1,
+        height: 1,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    dividerText: {
+        color: colors.luminous,
+        fontSize: 14,
+        marginHorizontal: 10,
+        opacity: 0.8,
+    },
+    googleButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: colors.luminous,
+        paddingVertical: 15,
+        paddingHorizontal: 40,
+        borderRadius: 10,
+        width: '100%',
+        justifyContent: 'center',
+        marginBottom: 15,
+    },
+    googleButtonText: {
+        color: '#1e293b',
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 10,
     },
 });
 

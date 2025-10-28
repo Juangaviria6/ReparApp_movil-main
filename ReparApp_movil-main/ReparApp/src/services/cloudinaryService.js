@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 
-const CLOUDINARY_CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dlouforsb';
-const CLOUDINARY_UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'profile_images';
+const CLOUDINARY_CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
 export const requestImagePermission = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -17,9 +17,10 @@ export const pickImage = async () => {
     if ( !hasPermission) return null;
 
     const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: 'images',
-        allowsEditing: false,
-        quality: 0.0,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
     });
 
     if (!result.canceled ) {
@@ -31,12 +32,37 @@ export const pickImage = async () => {
 
 export const uploadImageToCloudinary = async (imageUri) => {
     try {
+        // Verificar que las variables de entorno estén configuradas
+        if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+            console.error('Cloudinary credentials not found');
+            throw new Error('Las credenciales de Cloudinary no están configuradas');
+        }
+
         const formData = new FormData();
-        formData.append('file', {
-            uri: imageUri,
-            name: 'image/jpeg',
-            name: 'profile_image.jpg',
-        });
+        
+        // Detectar si es web o móvil
+        const isWeb = typeof document !== 'undefined';
+        
+        if (isWeb) {
+            // Para web: convertir la URI a blob
+            try {
+                const response = await fetch(imageUri);
+                const blob = await response.blob();
+                formData.append('file', blob);
+            } catch (error) {
+                console.error('Error al convertir imagen:', error);
+                // Fallback: usar el URI directamente
+                formData.append('file', { uri: imageUri, type: 'image/jpeg', name: 'profile_image.jpg' });
+            }
+        } else {
+            // Para móvil: usar el formato correcto
+            formData.append('file', {
+                uri: imageUri,
+                type: 'image/jpeg',
+                name: 'profile_image.jpg',
+            });
+        }
+        
         formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
         formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
     
@@ -45,14 +71,23 @@ export const uploadImageToCloudinary = async (imageUri) => {
           {
             method: 'POST',
             body: formData,
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
+            // NO agregar Content-Type header, el navegador lo hace automáticamente
           }
         );
     
         if (!response.ok) {
-          throw new Error('Error al subir la imagen');
+            let errorData;
+            try {
+                errorData = await response.json();
+            } catch {
+                errorData = await response.text();
+            }
+            console.error('Cloudinary error response:', errorData);
+            console.error('Cloudinary credentials:', { 
+                cloudName: CLOUDINARY_CLOUD_NAME, 
+                hasUploadPreset: !!CLOUDINARY_UPLOAD_PRESET 
+            });
+            throw new Error(`Error al subir la imagen (${response.status}): ${JSON.stringify(errorData)}`);
         }
     
         const data = await response.json();

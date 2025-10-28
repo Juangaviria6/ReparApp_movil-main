@@ -1,10 +1,12 @@
 import React, { useState } from "react"
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Switch } from "react-native"
+import { useNavigation } from "@react-navigation/native"
 import { Ionicons } from "@expo/vector-icons"
 import styles from "../styles/SettingsScreenStyles"
 
 // Pantalla de configuraciones que permite ajustar preferencias de la app
 export default function SettingsScreen() {
+  const navigation = useNavigation()
   const [notifications, setNotifications] = useState(true)
   const [darkMode, setDarkMode] = useState(false)
   const [locationServices, setLocationServices] = useState(true)
@@ -75,10 +77,24 @@ export default function SettingsScreen() {
     },
   ]
 
+  // Función para manejar la navegación de cada opción
+  const handleSettingPress = (item) => {
+    if (item.type === "navigation") {
+      if (item.title === "Perfil") {
+        navigation.navigate("EditProfile");
+      }
+      // Aquí puedes agregar más navegaciones futuras
+    }
+  };
+
   // Función para renderizar cada opción de configuración
   const renderSettingItem = (item) => {
     return (
-      <TouchableOpacity key={item.id} style={styles.settingItem}>
+      <TouchableOpacity 
+        key={item.id} 
+        style={styles.settingItem}
+        onPress={() => item.type === "navigation" && handleSettingPress(item)}
+      >
         <View style={styles.settingLeft}>
           <View style={styles.iconContainer}>
             <Ionicons name={item.icon} size={20} color="#059669" />

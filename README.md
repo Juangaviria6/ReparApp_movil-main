@@ -1,13 +1,16 @@
 ReparApp es tu aliado para resolver cualquier necesidad del hogar. Con solo unos toques puedes encontrar electricistas, plomeros, carpinteros, cerrajeros y más. Los usuarios pueden explorar empresas, ver valoraciones, contactarlas al instante y gestionar sus servicios favoritos. Una herramienta moderna para soluciones rápidas en el momento que más se necesitan.
 
-Tecnologias:
- Tecnología              Uso                                   
- React Native            Desarrollo móvil multiplataforma      
- Expo                   Ejecución, compilación y herramientas 
- React Navigation       Flujo de pantallas y rutas            
- Firebase Authentication  Autenticación de usuarios             
- SQLite                   Persistencia de datos en dispositivo  
- Cloudinary              Gestión de imágenes de empresas y personalizacion de usuario     
+Tecnologías
+
+| Tecnología             | Uso                                                                 |
+|------------------------|----------------------------------------------------------------------|
+| **React Native**       | Desarrollo móvil multiplataforma                                     |
+| **Expo**               | Ejecución, compilación y herramientas                                |
+| **React Navigation**   | Flujo de pantallas y rutas                                           |
+| **Firebase Authentication** | Autenticación de usuarios                                      |
+| **SQLite**             | Persistencia de datos en dispositivo                                 |
+| **Cloudinary**         | Gestión de imágenes de empresas y personalización de usuario         |
+
 ![login](https://github.com/user-attachments/assets/f6e76215-d2e3-4396-83f9-46aa572fcb4a)
 
 ![Registro](https://github.com/user-attachments/assets/5107bf87-1b3a-4e73-9c7c-5b81c1587765)
